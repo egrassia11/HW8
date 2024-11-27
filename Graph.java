@@ -1,7 +1,8 @@
 /******************************************************************
  *
  *   YOUR NAME / SECTION NUMBER
- *
+ *   Ethan Grassia / Section 001
+ * 
  *   Note, additional comments provided throughout this source code
  *   is for educational purposes
  *
@@ -103,8 +104,28 @@ public class Graph {
    */
   
   public int findRoot() {
+    int[] inDegree = new int[numVertices];
 
-    // ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME/SECTION AT TOP OF FILE
-    return -1;
+    for (int i = 0; i < numVertices; i++) {
+      for (Integer dest : adjListArr[i]) {
+        inDegree[dest]++;
+      }
+    }
+
+    int rootIndex = -1;
+    int rootCount = 0;
+
+    for (int i = 0; i < numVertices; i++) {
+      if (inDegree[i] == 0) {
+        rootIndex = i;
+        rootCount++;
+      }
+    }
+
+    if (rootCount == 1) {
+      return vertexValues.get(rootIndex);
+    } else {
+      return -1;
+    }
   } 
 }

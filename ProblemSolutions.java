@@ -1,13 +1,17 @@
 /******************************************************************
  *
- *   ADD YOUR NAME / SECTION NUMBER HERE
+ *   YOUR NAME / SECTION NUMBER
+ *   Ethan Grassia / Section 001
  *
  *   This java file contains the problem solutions of canFinish and
  *   numGroups methods.
  *
  ********************************************************************/
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 class ProblemSolutions {
 
@@ -81,11 +85,46 @@ class ProblemSolutions {
         ArrayList<Integer>[] adj = getAdjList(numExams, 
                                         prerequisites); 
 
-        // ADD YOUR CODE HERE - ADD YOUR NAME / SECTION AT TOP OF FILE
-        return false;
+        int[] status = new int[numNodes];
 
+        // Perform DFS for each node
+        for (int i = 0; i < numNodes; i++) {
+            if (status[i] == 0) {
+                if (!dfs(i, adj, status)) {
+                    return false; // Cycle detected
+                }
+            }
+        }
+        return true; // No cycles detected
     }
 
+    /**
+     * Helper method for DFS traversal
+     *
+     * @param node
+     * @param adj
+     * @param status
+     * @return boolean
+     */
+
+    private boolean dfs(int node, ArrayList<Integer>[] adj, int[] status) {
+        if (status[node] == -1) {
+            return false;
+        }
+        if (status[node] == 1) {
+            return true;
+        }
+        status[node] = -1;
+        
+        for (int neighbor : adj[node]) {
+            if (!dfs(neighbor, adj, status)) {
+                return false;
+            }
+        }
+
+        status[node] = 1;
+        return true;
+    }
 
     /**
      * Method getAdjList
@@ -108,7 +147,7 @@ class ProblemSolutions {
             adj[node] = new ArrayList<Integer>();   // Allocate empty ArrayList per node
         }
         for (int[] edge : edges){
-            adj[edge[0]].add(edge[1]);              // Add connected node edge [1] for node [0]
+            adj[edge[1]].add(edge[0]);              // Add connected node edge[0] for node edge[1]
         }
         return adj;
     }
@@ -165,8 +204,8 @@ class ProblemSolutions {
 
     public int numGroups(int[][] adjMatrix) {
         int numNodes = adjMatrix.length;
-        Map<Integer,List<Integer>> graph = new HashMap();
-        int i = 0, j =0;
+        Map<Integer, List<Integer>> graph = new HashMap<>();
+        int i = 0, j = 0;
 
         /*
          * Converting the Graph Adjacency Matrix to
@@ -174,13 +213,13 @@ class ProblemSolutions {
          * sample code illustrates a technique to do so.
          */
 
-        for(i = 0; i < numNodes ; i++){
-            for(j = 0; j < numNodes; j++){
-                if( adjMatrix[i][j] == 1 && i != j ){
+        for (i = 0; i < numNodes; i++) {
+            for (j = 0; j < numNodes; j++) {
+                if (adjMatrix[i][j] == 1 && i != j) {
                     // Add AdjList for node i if not there
-                    graph.putIfAbsent(i, new ArrayList());
+                    graph.putIfAbsent(i, new ArrayList<>());
                     // Add AdjList for node j if not there
-                    graph.putIfAbsent(j, new ArrayList());
+                    graph.putIfAbsent(j, new ArrayList<>());
 
                     // Update node i adjList to include node j
                     graph.get(i).add(j);
@@ -190,9 +229,35 @@ class ProblemSolutions {
             }
         }
 
-        // YOUR CODE GOES HERE - you can add helper methods, you do not need
-        // to put all code in this method.
-        return -1;
+        // Array to keep track of visited nodes
+        boolean[] visited = new boolean[numNodes];
+        int groups = 0;
+
+        // Iterate over all nodes
+        for (int node = 0; node < numNodes; node++) {
+            if (!visited[node]) {
+                // Start DFS from unvisited node
+                dfsNumGroups(node, graph, visited);
+                groups++;
+            }
+        }
+        return groups;
     }
 
+    /**
+     * Helper method for DFS traversal
+     *
+     * @param node
+     * @param graph
+     * @param visited
+     */
+    private void dfsNumGroups(int node, Map<Integer, List<Integer>> graph, boolean[] visited) {
+        visited[node] = true;
+        List<Integer> neighbors = graph.getOrDefault(node, new ArrayList<>());
+        for (int neighbor : neighbors) {
+            if (!visited[neighbor]) {
+                dfsNumGroups(neighbor, graph, visited);
+            }
+        }
+    }
 }
